@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  coach
+  admin
+}
+
+model User {
+  id        String   @id
+  email     String   @unique @db.VarChar(255)
+  fullName  String   @map("full_name") @db.VarChar(255)
+  role      UserRole @default(coach)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  clients      ClientCoach[]
+  weeklyScores WeeklyScore[]
+  aiReports    AiReport[]
+
+  @@map("users")
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(255)
+  slug      String   @unique @db.VarChar(255)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  coaches      ClientCoach[]
+  weeklyScores WeeklyScore[]
+
+  @@index([isActive])
+  @@map("clients")
+}
+
+model ClientCoach {
+  clientId String @map("client_id")
+  coachId  String @map("coach_id")
+
+  client Client @relation(fields: [clientId], references: [id])
+  coach  User   @relation(fields: [coachId], references: [id])
+
+  @@id([clientId, coachId])
+  @@map("client_coaches")
+}
+
+model WeeklyScore {
+  id              String   @id @default(cuid())
+  clientId        String   @map("client_id")
+  coachId         String   @map("coach_id")
+  weekStart       DateTime @map("week_start") @db.Date
+  currentScore    Int      @map("current_score")
+  predictiveScore Int      @map("predictive_score")
+  actions                String?   @db.Text
+  notes                  String?   @db.Text
+  aiSummary              String?   @map("ai_summary") @db.Text
+  aiSummaryGeneratedAt   DateTime? @map("ai_summary_generated_at")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id])
+  coach  User   @relation(fields: [coachId], references: [id])
+
+  @@unique([clientId, weekStart])
+  @@index([clientId, weekStart])
+  @@index([coachId, weekStart])
+  @@index([weekStart])
+  @@map("weekly_scores")
+}
+
+model AiReport {
+  id          String   @id @default(cuid())
+  weekStart   DateTime @map("week_start") @db.Date
+  content     String   @db.Text
+  generatedBy String   @map("generated_by")
+  generatedAt DateTime @default(now()) @map("generated_at")
+
+  user User @relation(fields: [generatedBy], references: [id])
+
+  @@index([weekStart])
+  @@map("ai_reports")
+}
