@@ -16,7 +16,7 @@ export default async function AppLayout({
   return (
     <SidebarProvider>
       <AppSidebar user={user} />
-      <SidebarInset className="flex flex-col min-h-svh">
+      <SidebarInset className="flex flex-col min-h-svh min-w-0">
         <TopNav user={user} />
         <main className="flex flex-1 flex-col p-5 md:p-7 overflow-auto">
           {children}

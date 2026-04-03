@@ -127,7 +127,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
     return (
       <NuqsAdapter>
-        <div className="flex flex-col gap-8 max-w-full">
+        <div className="flex flex-col gap-8 w-full min-w-0">
           <PortfolioHeader
             weekLabel={weekLabel}
             weekISO={weekISO}
@@ -226,7 +226,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <NuqsAdapter>
-      <div className="flex flex-col gap-6 max-w-full">
+      <div className="flex flex-col gap-6 w-full min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">My Dashboard</h1>
